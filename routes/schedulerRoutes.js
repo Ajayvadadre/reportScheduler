@@ -1,5 +1,5 @@
 import express from 'express';
-import { getReportStatus, scheduleReport } from '../controllers/scheduler'
+import { getReportStatus, saveSchedulerConfig } from '../controllers/scheduler.js'
 let router = express.Router();
 
 router.get('/status', async (req, res) => {
@@ -30,19 +30,26 @@ router.get('/status', async (req, res) => {
 
 router.post('/saveSchedulerConfig', async (req, res) => {
 
-    const id = req.body.id;
+    const { id, name } = req.body.data;
 
-    if (!id) {
+    if (!req.body.data || !id) {
         res.status(400).json({
             status: false,
-            message: 'Bad parameters supplied, please provide correct Id'
+            message: 'Bad parameters supplied, please provide correct data'
         });
         return
     }
 
     try {
 
-        await saveSchedulerConfig(id);
+       let saveStatus =  await saveSchedulerConfig(req.body);
+
+       if(!saveStatus) {
+        res.status(500).json({
+            status: false,
+            message: `Failed to schedule report for ::: ${name}`
+        })
+       }
 
         res.status(200).json({
             status: true,
@@ -51,10 +58,12 @@ router.post('/saveSchedulerConfig', async (req, res) => {
 
     } catch (error) {
 
-        console.log('error ::: Unable to schedule report for id :::', id);
+        console.log('error ::: Unable to schedule report for id :::', name);
         res.status(500).json({
             status: false,
-            message: `Failed to schedule report for id:::${id}`
+            message: `Failed to schedule report for id:::${name}`
         })
     }
 });
+
+export default router;

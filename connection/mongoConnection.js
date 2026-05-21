@@ -1,27 +1,49 @@
-import { MongoClient } from 'mongodb';
-import 'dotenv/config';
+import dotenv from 'dotenv';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import mongoose from 'mongoose';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+dotenv.config({ path: resolve(__dirname, '../.env'), quiet: true });
 
 class MongoConnection {
 
     constructor() {
 
-        this.client = null;
-        this.db     = null;
+        this.connected = false
     }
 
     async startMongoDb() {
         try {
             const uri = process.env.MONGO_URI;
-            const database = process.env.MONGO_DATABASE;
-            
-            this.client = new MongoClient(uri, {
+
+            if (!uri) {
+                throw new Error('Missing MONGO_URI or MONGO_DATABASE in .env');
+            }
+
+            mongoose.connect(uri, {
                 maxPoolSize: 10,
+                socketTimeoutMS: 5000,
+                serverSelectionTimeoutMS: 5000,
+            })
+
+            console.log('log ::: Connected to mongoDB')
+
+            mongoose.connection.on('error', (err) => {
+                console.log('error ::: Mongo Connection error', err)
+                this.connected = false
+            })
+
+            mongoose.connection.on('disconnected', () => {
+                console.log('error ::: MongoDB disconnected');
+                this.isConnected = false;
             });
 
-            await this.client.connect();
+            mongoose.connection.on('reconnected', () => {
+                console.log('log ::: MongoDB reconnected');
+                this.isConnected = true;
+            });
 
-            this.db = this.client.db(database);
-            console.log('log ::: Connected to mongoDB')
 
         } catch (error) {
             console.log('error ::: Connection to mongoDB failed', error);
@@ -29,18 +51,12 @@ class MongoConnection {
         }
     };
 
-    getDb() {
-        if (!this.db) {
-            throw new Error('Call Connect first!')
-        }
-        return this.db
-    };
-
     async disconnect() {
-        if (this.client) {
-            await this.client.close();
+        if (this.isConnected) {
+            await mongoose.disconnect();
+            this.isConnected = false;
+            console.log('log ::: mongo connection closed');
         }
-        console.log('log ::: mongo connection closed');
     }
 };
 

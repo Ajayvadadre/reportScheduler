@@ -1,7 +1,7 @@
 import express from 'express';
 import 'dotenv/config';
-import schedulerRoutes from '../routes/schedulerRoutes';
-import MongoConnection from '../connection/mongoConnection';
+import schedulerRoutes from '../routes/schedulerRoutes.js';
+import MongoConnection from '../connection/mongoConnection.js';
 
 const app = express();
 const {
@@ -9,6 +9,7 @@ const {
 } = process.env
 
 app.use("/schedule", schedulerRoutes)
+app.use(express.json());
 
 async function startServer() {
 
