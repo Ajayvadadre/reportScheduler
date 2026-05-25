@@ -1,11 +1,11 @@
 import { initReportSchedule } from '../main/reportScheduler.js';
-import { reportStatusSchema } from '../schemas/reportStatusSchema.js';
-import { schedulerConfigSchema } from '../schemas/schedulerConfigSchema.js';
+import reportStatusSchema  from '../schemas/reportStatusSchema.js';
+import schedulerConfigSchema  from '../schemas/schedulerConfigSchema.js';
 
 
 async function getReportStatus() {
 
-    let reportData = await reportStatusSchema.find({}).sort({ _id: -1 }).limit(50).toArray();
+    let reportData = await reportStatusSchema.find({}).sort({ _id: -1 }).limit(50);
 
     if (reportData.length == 0) {
         console.log('log::: No reportData found');
@@ -18,7 +18,7 @@ async function getReportStatus() {
 async function saveSchedulerConfig(scheduleConfig) {
 
     //save config inside mongoDB
-    await schedulerConfigSchema.insertOne(scheduleConfig);
+    await schedulerConfigSchema.insertOne(scheduleConfig.data);
 
 
     //Initialising cron job for config

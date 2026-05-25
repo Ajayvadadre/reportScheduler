@@ -30,15 +30,16 @@ router.get('/status', async (req, res) => {
 
 router.post('/saveSchedulerConfig', async (req, res) => {
 
-    const { id, name } = req.body.data;
-
-    if (!req.body.data || !id) {
+    if (!req.body.data) {
         res.status(400).json({
             status: false,
             message: 'Bad parameters supplied, please provide correct data'
         });
         return
     }
+
+    const { id, name } = req.body.data;
+
 
     try {
 

@@ -3,8 +3,10 @@ import mongoose from "mongoose";
 const schedulerConfigSchema = mongoose.Schema(
     {
         type: { type: String },
-        scheduleTime: { type: String },
-        id: { type: String }
+        time: { type: String },
+        id: { type: String },
+        name: { type: String },
+        date: { type: String, default: false }
     }
 );
 

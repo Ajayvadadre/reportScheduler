@@ -8,8 +8,8 @@ const {
     PORT = 3000
 } = process.env
 
-app.use("/schedule", schedulerRoutes)
 app.use(express.json());
+app.use("/schedule", schedulerRoutes)
 
 async function startServer() {
 
