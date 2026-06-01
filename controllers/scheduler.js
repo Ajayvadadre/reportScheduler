@@ -1,6 +1,7 @@
 import { initReportSchedule } from '../main/reportScheduler.js';
-import reportStatusSchema  from '../schemas/reportStatusSchema.js';
-import schedulerConfigSchema  from '../schemas/schedulerConfigSchema.js';
+import reportStatusSchema from '../schemas/reportStatusSchema.js';
+import schedulerConfigSchema from '../schemas/schedulerConfigSchema.js';
+import reportDataSchema from '../schemas/reportDataSchema.js';
 
 
 async function getReportStatus() {
@@ -33,8 +34,14 @@ async function saveSchedulerConfig(scheduleConfig) {
 
 }
 
+async function insertReportData(data) {
+
+    await reportDataSchema.insertOne(data);
+    
+}
 
 export {
     getReportStatus,
-    saveSchedulerConfig
+    saveSchedulerConfig,
+    insertReportData
 }
