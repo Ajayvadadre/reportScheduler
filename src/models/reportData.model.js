@@ -12,4 +12,4 @@ const reportDataSchema = mongoose.Schema(
     { timestamps: true }
 );
 
-export default mongoose.model("reportData", reportDataSchema)
+export default mongoose.model("reportData", reportDataSchema);

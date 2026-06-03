@@ -1,7 +1,7 @@
 import express from 'express';
 import 'dotenv/config';
-import schedulerRoutes from '../routes/schedulerRoutes.js';
-import MongoConnection from '../connection/mongoConnection.js';
+import schedulerRoutes from './routes/scheduler.route.js';
+import MongoConnection from './database/mongoConnection.js';
 
 const app = express();
 const {

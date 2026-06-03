@@ -1,7 +1,7 @@
 import cron from 'node-cron';
-import { csvGenerator } from './csvGenerator.js';
-import schedulerConfigSchema from '../schemas/schedulerConfigSchema.js';
-import reportStatusSchema from '../schemas/reportStatusSchema.js';
+import { csvGenerator } from './csvGenerator.service.js';
+import schedulerConfigSchema from '../models/schedulerConfig.model.js';
+import reportStatusSchema from '../models/reportStatus.model.js';
 
 async function initReportSchedule(configData) {
 
@@ -45,7 +45,7 @@ async function convertTime(configData) {
     switch (configData.data.type) {
 
         case 'interval':
-            return configData.time;
+            return timeSet;
 
         case 'daily':
             let time = timeSet.split(':');
@@ -84,17 +84,22 @@ async function executeReport(configData) {
         await reportStatusSchema.insert({
             status: "failed",
             message: "ReportGenerateFailure::: Unable to find config to generate csv report",
-            name: configData.data.name
+            type: configData.data.type,
+            name: configData.data.name,
+            scheduleTime: configData.data.time
         });
         return;
     };
 
     try {
-        generatedCsv = await csvGenerator(date);
+
+        const generatedCsv = await csvGenerator(date);
 
         if (!generatedCsv) {
+            console.log("log::: Unable to generate report csv");
+            return
+        };
 
-        }
     } catch (error) {
         console.log(`error::: csv generation failed for:::${configData.data.name}:::Error:::${error}`);
         await reportStatusSchema.insertOne({

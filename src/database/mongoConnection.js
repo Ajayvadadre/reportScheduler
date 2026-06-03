@@ -21,7 +21,7 @@ class MongoConnection {
                 throw new Error('Missing MONGO_URI or MONGO_DATABASE in .env');
             }
 
-            mongoose.connect(uri, {
+          await mongoose.connect(uri, {
                 maxPoolSize: 10,
                 socketTimeoutMS: 5000,
                 serverSelectionTimeoutMS: 5000,
@@ -36,12 +36,12 @@ class MongoConnection {
 
             mongoose.connection.on('disconnected', () => {
                 console.log('error ::: MongoDB disconnected');
-                this.isConnected = false;
+                this.connected = false;
             });
 
             mongoose.connection.on('reconnected', () => {
                 console.log('log ::: MongoDB reconnected');
-                this.isConnected = true;
+                this.connected = true;
             });
 
 
@@ -52,9 +52,9 @@ class MongoConnection {
     };
 
     async disconnect() {
-        if (this.isConnected) {
+        if (this.connected) {
             await mongoose.disconnect();
-            this.isConnected = false;
+            this.connected = false;
             console.log('log ::: mongo connection closed');
         }
     }

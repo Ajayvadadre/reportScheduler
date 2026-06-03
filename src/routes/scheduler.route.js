@@ -1,5 +1,5 @@
 import express from 'express';
-import { getReportStatus, saveSchedulerConfig, insertReportData } from '../controllers/scheduler.js'
+import { getReportStatus, saveSchedulerConfig, insertReportData } from '../controllers/scheduler.controller.js'
 let router = express.Router();
 
 router.get('/status', async (req, res) => {
@@ -14,7 +14,7 @@ router.get('/status', async (req, res) => {
         };
 
         res.status(200).json({
-            status: "successfull",
+            status: "successful",
             message: reportData
         });
 
@@ -30,7 +30,7 @@ router.get('/status', async (req, res) => {
 
 router.post('/saveSchedulerConfig', async (req, res) => {
 
-    if (!req.body.data) {
+    if (!req.body || !req.body.data) {
         res.status(400).json({
             status: "failed",
             message: 'Bad parameters supplied, please provide correct data'
@@ -47,11 +47,12 @@ router.post('/saveSchedulerConfig', async (req, res) => {
             res.status(500).json({
                 status: "failed",
                 message: `Failed to schedule report for ::: ${name}`
-            })
+            });
+            return
         }
 
         res.status(200).json({
-            status: "successfull",
+            status: "successful",
             message: 'Report scheduled successfully'
         })
 
@@ -84,7 +85,7 @@ router.post('/insertReportData', async (req, res) => {
         console.log("Report data inserted successfully");
 
         res.status(200).json({
-            status: "successfull",
+            status: "successful",
             messge: "Report data inserted successfully"
         });
 
