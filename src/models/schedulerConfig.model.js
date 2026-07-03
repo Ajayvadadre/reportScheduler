@@ -6,8 +6,14 @@ const schedulerConfigSchema = mongoose.Schema(
         time: { type: String },
         id: { type: String },
         name: { type: String },
-        date: { type: Object, default: false }
-    }
+        date: { type: Object, default: false },
+        uploadType: { type: String, enum: ['aws', 'sftp'], default: 'aws' },
+        credentials: { type: Object, default: {} },
+        active: { type: Boolean, default: true },
+        lastRunAt: { type: Date, default: null },
+        lastStatus: { type: String, default: null }
+    },
+    { timestamps: true }
 );
 
 export default mongoose.model("schedulerConfig", schedulerConfigSchema)

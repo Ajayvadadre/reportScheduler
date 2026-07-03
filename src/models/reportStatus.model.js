@@ -8,7 +8,8 @@ const reportStatusSchema = mongoose.Schema(
         scheduleTime: { type: String },
         name: { type: String }
 
-    }
+    },
+    { timestamps: true }
 );
 
 export default mongoose.model('reportStatus', reportStatusSchema)
