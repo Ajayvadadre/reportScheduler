@@ -6,7 +6,7 @@ const schedulerConfigSchema = mongoose.Schema(
         time: { type: String },
         id: { type: String },
         name: { type: String },
-        date: { type: String, default: false }
+        date: { type: Object, default: false }
     }
 );
 

@@ -1,6 +1,7 @@
-import { initReportSchedule } from '../main/reportScheduler.js';
-import reportStatusSchema  from '../schemas/reportStatusSchema.js';
-import schedulerConfigSchema  from '../schemas/schedulerConfigSchema.js';
+import { initReportSchedule } from '../services/reportScheduler.service.js';
+import reportStatusSchema from '../models/reportStatus.model.js';
+import schedulerConfigSchema from '../models/schedulerConfig.model.js';
+import reportDataSchema from '../models/reportData.model.js';
 
 
 async function getReportStatus() {
@@ -9,7 +10,7 @@ async function getReportStatus() {
 
     if (reportData.length == 0) {
         console.log('log::: No reportData found');
-        throw new Error('No reportData found')
+        return;
     };
 
     return reportData;
@@ -33,8 +34,14 @@ async function saveSchedulerConfig(scheduleConfig) {
 
 }
 
+async function insertReportData(data) {
+
+    await reportDataSchema.insertOne(data);
+    
+}
 
 export {
     getReportStatus,
-    saveSchedulerConfig
+    saveSchedulerConfig,
+    insertReportData
 }

@@ -2,9 +2,11 @@ import mongoose from "mongoose";
 
 const reportStatusSchema = mongoose.Schema(
     {
+        status: { type: String },
+        message: { type: String },
         type: { type: String },
         scheduleTime: { type: String },
-        status: { type: String },
+        name: { type: String }
 
     }
 );

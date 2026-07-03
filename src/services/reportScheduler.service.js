@@ -1,7 +1,7 @@
 import cron from 'node-cron';
-import { csvGenerator } from './csvGenerator';
-import schedulerConfigSchema from '../schemas/schedulerConfigSchema';
-import reportStatusSchema from '../schemas/reportStatusSchema';
+import { csvGenerator } from './csvGenerator.service.js';
+import schedulerConfigSchema from '../models/schedulerConfig.model.js';
+import reportStatusSchema from '../models/reportStatus.model.js';
 
 async function initReportSchedule(configData) {
 
@@ -12,7 +12,7 @@ async function initReportSchedule(configData) {
         return false;
     };
 
-    const cronSchedule = await scheduleCron(cronRule, configData.data);
+    const cronSchedule = await scheduleCron(cronRule, configData);
     if (!cronSchedule) {
         return false;
     };
@@ -45,7 +45,7 @@ async function convertTime(configData) {
     switch (configData.data.type) {
 
         case 'interval':
-            return configData.time;
+            return timeSet;
 
         case 'daily':
             let time = timeSet.split(':');
@@ -64,7 +64,7 @@ async function scheduleCron(cronRule, configData) {
             executeReport(configData)
         });
 
-        console.log(`Successfully registered cron job for ID ${configData.id} with rule: ${cronRule}`);
+        console.log(`Successfully registered cron job for ID ${configData.data.id} with rule: ${cronRule}`);
         return true;
 
     } catch (error) {
@@ -84,17 +84,25 @@ async function executeReport(configData) {
         await reportStatusSchema.insert({
             status: "failed",
             message: "ReportGenerateFailure::: Unable to find config to generate csv report",
-            name: configData.name
+            type: configData.data.type,
+            name: configData.data.name,
+            scheduleTime: configData.data.time
         });
         return;
     };
 
     try {
-        generatedCsv = await csvGenerator(date);
+
+        const generatedCsv = await csvGenerator(date);
+
+        if (!generatedCsv) {
+            console.log("log::: Unable to generate report csv");
+            return
+        };
 
     } catch (error) {
-        console.log(`error::: csv generation failed for:::${configData.name}:::Error:::${error}`);
-        await reportStatusSchema.insert({
+        console.log(`error::: csv generation failed for:::${configData.data.name}:::Error:::${error}`);
+        await reportStatusSchema.insertOne({
             status: "failed",
             message: "ReportGenerateFailure::: Unable to generate csv",
             name: configData.name
