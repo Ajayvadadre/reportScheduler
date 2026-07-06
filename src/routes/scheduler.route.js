@@ -1,8 +1,9 @@
 import express from 'express';
-import { getReportStatus, saveSchedulerConfig, insertReportData } from '../controllers/scheduler.controller.js'
+import { getReportStatus, getConfigData, saveSchedulerConfig, insertReportData, updateScheduleList } from '../controllers/scheduler.controller.js'
 let router = express.Router();
 
 router.get('/status', async (req, res) => {
+
     try {
         let reportData = await getReportStatus();
         if (!reportData) {
@@ -28,6 +29,32 @@ router.get('/status', async (req, res) => {
     }
 });
 
+router.get('/getConfigurations', async (req, res) => {
+
+    try {
+        let configData = await getConfigData();
+
+        if (!configData) {
+            res.status(404).json({
+                status: "successful",
+                message: "No data found"
+            });
+            return
+        };
+
+        res.status(200).json({
+            status: "successful",
+            message: configData
+        })
+    } catch (error) {
+        console.log("error::: Unable to find configuration data:::", error.message);
+        res.status(500).json({
+            status: "failed",
+            message: "failed to fetch configuration data"
+        })
+    }
+})
+
 router.post('/saveSchedulerConfig', async (req, res) => {
 
     if (!req.body || !req.body.data) {
@@ -38,7 +65,7 @@ router.post('/saveSchedulerConfig', async (req, res) => {
         return
     }
 
-    const { id, name } = req.body.data;
+    const { name } = req.body.data;
     try {
 
         let saveStatus = await saveSchedulerConfig(req.body);
@@ -97,6 +124,36 @@ router.post('/insertReportData', async (req, res) => {
             message: `Unable to insert report data`
         })
     }
+})
+
+router.post('/updateScheduleList', async (req, res) => {
+
+    const data = req.body;
+    console.log(data);
+    if (data.length == 0) {
+        console.log("No ids to update the data");
+        res.status(404).json({
+            status: "failed",
+            message: "No ids to update data"
+        })
+    }
+
+    try {
+        await updateScheduleList(data);
+
+    } catch (error) {
+        console.log("error::: Unable to update data for selected ids",error.message);
+        res.status(500).json({
+            status: "failed",
+            message: "Unable to update data for selected ids"
+        })
+    }
+
+    res.status(200).json({
+        status: "successful",
+        message: "Successfully updated data for ids"
+    })
+
 })
 
 export default router;
