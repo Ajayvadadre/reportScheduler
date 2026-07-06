@@ -11,7 +11,8 @@ const schedulerConfigSchema = mongoose.Schema(
         credentials: { type: Object, default: {} },
         active: { type: Boolean, default: true },
         lastRunAt: { type: Date, default: null },
-        lastStatus: { type: String, default: null }
+        lastStatus: { type: String, default: null },
+        status: { type: String }
     },
     { timestamps: true }
 );

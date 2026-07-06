@@ -24,7 +24,8 @@ function normalizeConfig(configData) {
             date: data?.date
         },
         uploadType: configData?.uploadType || data?.uploadType || 'aws',
-        credentials: configData?.credentials || data?.credentials || {}
+        credentials: configData?.credentials || data?.credentials || {},
+        status: configData?.status
     };
 }
 

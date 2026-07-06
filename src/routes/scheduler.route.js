@@ -1,5 +1,5 @@
 import express from 'express';
-import { getReportStatus, getConfigData, saveSchedulerConfig, insertReportData } from '../controllers/scheduler.controller.js'
+import { getReportStatus, getConfigData, saveSchedulerConfig, insertReportData, updateScheduleList } from '../controllers/scheduler.controller.js'
 let router = express.Router();
 
 router.get('/status', async (req, res) => {
@@ -124,6 +124,36 @@ router.post('/insertReportData', async (req, res) => {
             message: `Unable to insert report data`
         })
     }
+})
+
+router.post('/updateScheduleList', async (req, res) => {
+
+    const data = req.body;
+    console.log(data);
+    if (data.length == 0) {
+        console.log("No ids to update the data");
+        res.status(404).json({
+            status: "failed",
+            message: "No ids to update data"
+        })
+    }
+
+    try {
+        await updateScheduleList(data);
+
+    } catch (error) {
+        console.log("error::: Unable to update data for selected ids",error.message);
+        res.status(500).json({
+            status: "failed",
+            message: "Unable to update data for selected ids"
+        })
+    }
+
+    res.status(200).json({
+        status: "successful",
+        message: "Successfully updated data for ids"
+    })
+
 })
 
 export default router;

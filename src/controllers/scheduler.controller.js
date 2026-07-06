@@ -16,11 +16,10 @@ async function getReportStatus() {
     return reportData;
 };
 
-async function getConfigData(){
+async function getConfigData() {
 
     let configData = await schedulerConfigSchema.find({}).limit(50);
-    console.log(configData)
-    if(configData.length == 0){
+    if (configData.length == 0) {
         console.log('log::: No configData found');
         return;
     };
@@ -31,6 +30,7 @@ async function getConfigData(){
 async function saveSchedulerConfig(scheduleConfig) {
 
     const validation = validateScheduleConfig(scheduleConfig);
+    console.log(validation)
     if (!validation.valid) {
         console.log('log::: Scheduler config validation failed:::', validation.message);
         return false;
@@ -46,7 +46,8 @@ async function saveSchedulerConfig(scheduleConfig) {
                 ...config.data,
                 uploadType: config.uploadType,
                 credentials: config.credentials,
-                active: true
+                active: true,
+                status: config.status
             }
         },
         { upsert: true }
@@ -68,12 +69,33 @@ async function saveSchedulerConfig(scheduleConfig) {
 async function insertReportData(data) {
 
     await reportDataSchema.insertOne(data);
-    
+}
+
+async function updateScheduleList(data) {
+
+
+    if (data.status == 'terminate') {
+
+        return await schedulerConfigSchema.deleteMany(
+            { _id: { $in: data.ids } }
+        )
+    } else {
+
+        return await schedulerConfigSchema.updateMany(
+            {
+                _id: { $in: data.ids },
+            },
+            {
+                $set: { status: data.status }
+            }
+        )
+    }
 }
 
 export {
     getReportStatus,
     getConfigData,
     saveSchedulerConfig,
-    insertReportData
+    insertReportData,
+    updateScheduleList
 }
